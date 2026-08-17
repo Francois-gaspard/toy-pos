@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no"
+        />
+        <title>Kids Toy Store POS 🛍️</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                display: flex;
+                height: 100vh;
+                background-color: #f0f4f8;
+                overflow: hidden;
+            }
+
+            /* --- LEFT SIDE: STOREFRONT --- */
+            .store-container {
+                flex: 7;
+                display: flex;
+                flex-direction: column;
+                padding: 15px;
+                border-right: 3px solid #e1e8ed;
+            }
+
+            .category-tabs {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+            .tab-btn {
+                background: #ffffff;
+                border: 2px solid #cbd5e1;
+                padding: 12px 20px;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #475569;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: 0.2s;
+            }
+            .tab-btn.active {
+                background: #3b82f6;
+                color: white;
+                border-color: #2563eb;
+                transform: scale(1.02);
+            }
+
+            .products-grid {
+                flex: 1;
+                display: flex; /* Changed to flex to stack category sections */
+                flex-direction: column; /* Stack category sections vertically */
+                gap: 20px; /* Space between category sections */
+                overflow-y: auto;
+                padding-right: 5px;
+            }
+            .product-card {
+                background: white;
+                border-radius: 16px;
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
+                height: 220px; /* Fixed height for product cards */
+                border: 2px solid #e2e8f0;
+                cursor: pointer;
+                transition: transform 0.1s;
+                user-select: none;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            }
+            .product-card:active {
+                transform: scale(0.93);
+            }
+            .product-img {
+                width: 100%;
+                height: 90px;
+                object-fit: contain;
+                border-radius: 8px;
+                margin-bottom: 8px;
+            }
+            .product-title {
+                font-size: 0.95rem;
+                font-weight: bold;
+                color: #1e293b;
+                text-align: center;
+                margin-bottom: 4px;
+                line-height: 1.2;
+            }
+            .product-price {
+                font-size: 1.1rem;
+                font-weight: 800;
+                color: #16a34a;
+            }
+
+            /* Styles for category grouping */
+            .category-section {
+                margin-bottom: 25px; /* Space between different category sections */
+            }
+
+            .category-heading {
+                font-size: 1.6rem;
+                font-weight: 800;
+                color: #0f172a;
+                margin-bottom: 15px;
+                padding-left: 5px; /* Align with product cards */
+            }
+
+            .category-product-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 15px;
+            }
+
+            /* --- RIGHT SIDE: CART PANEL --- */
+            .cart-container {
+                flex: 4;
+                background: white;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05);
+            }
+            .cart-header {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: #0f172a;
+                margin-bottom: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .cart-items-list {
+                flex: 1;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding-right: 5px;
+            }
+            .cart-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: #f8fafc;
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+            }
+            .cart-item-details {
+                flex: 1;
+            }
+            .cart-item-title {
+                font-weight: bold;
+                color: #334155;
+                font-size: 0.95rem;
+            }
+            .cart-item-subtotal {
+                font-weight: bold;
+                color: #16a34a;
+                font-size: 0.9rem;
+            }
+
+            .qty-controls {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .qty-btn {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                border: none;
+                background: #cbd5e1;
+                font-weight: bold;
+                font-size: 1.2rem;
+                cursor: pointer;
+                color: #0f172a;
+            }
+            .qty-btn:active {
+                background: #94a3b8;
+            }
+
+            .cart-footer {
+                margin-top: 15px;
+                border-top: 2px dashed #e2e8f0;
+                padding-top: 15px;
+            }
+            .total-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 1.8rem;
+                font-weight: 900;
+                color: #0f172a;
+                margin-bottom: 15px;
+            }
+
+            .action-btns {
+                display: flex;
+                gap: 10px;
+            }
+            .clear-btn {
+                flex: 1;
+                background: #ef4444;
+                color: white;
+                border: none;
+                padding: 15px;
+                border-radius: 12px;
+                font-weight: bold;
+                cursor: pointer;
+                font-size: 1rem;
+            }
+            .pay-btn {
+                flex: 2;
+                background: #22c55e;
+                color: white;
+                border: none;
+                padding: 15px;
+                border-radius: 12px;
+                font-size: 1.3rem;
+                font-weight: 800;
+                cursor: pointer;
+                box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+            }
+            .pay-btn:active {
+                transform: scale(0.98);
+            }
+
+            /* --- POPUP MODAL --- */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.6);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+            .modal-card {
+                background: white;
+                border-radius: 24px;
+                padding: 30px;
+                width: 90%;
+                max-width: 500px;
+                text-align: center;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            }
+            .payment-options {
+                display: flex;
+                gap: 15px;
+                margin: 20px 0;
+            }
+            .method-btn {
+                flex: 1;
+                padding: 20px;
+                border-radius: 16px;
+                border: 2px solid #e2e8f0;
+                background: #f8fafc;
+                cursor: pointer;
+                font-size: 1rem;
+                font-weight: bold;
+            }
+            .method-btn.selected {
+                border-color: #3b82f6;
+                background: #eff6ff;
+                color: #1d4ed8;
+            }
+
+            .payment-screen {
+                margin: 20px 0;
+                min-height: 120px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            .cash-bills {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .bill-btn {
+                background: #16a34a;
+                color: white;
+                border: none;
+                padding: 10px 18px;
+                border-radius: 8px;
+                font-weight: bold;
+                cursor: pointer;
+                font-size: 1.1rem;
+            }
+            .qr-img {
+                width: 140px;
+                height: 140px;
+                border-radius: 12px;
+            }
+            .card-graphic {
+                font-size: 4rem;
+                animation: pulse 1.5s infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+            .close-modal {
+                background: #94a3b8;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-top: 10px;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- LEFT: Store Grid -->
+        <div class="store-container">
+            <div class="category-tabs" id="category-tabs"></div>
+            <div class="products-grid" id="products-grid"></div>
+        </div>
+
+        <!-- RIGHT: Cart Panel -->
+        <div class="cart-container">
+            <div class="cart-header">
+                <span>Order Cart 🛒</span>
+            </div>
+            <div class="cart-items-list" id="cart-list"></div>
+
+            <div class="cart-footer">
+                <div class="total-row">
+                    <span>Total:</span>
+                    <span id="cart-total">฿0</span>
+                </div>
+                <div class="action-btns">
+                    <button class="clear-btn" onclick="clearCart()">
+                        Clear
+                    </button>
+                    <button class="pay-btn" onclick="openCheckout()">
+                        PAY 💳
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POPUP: Payment Modal -->
+        <div class="modal-overlay" id="payment-modal">
+            <div class="modal-card">
+                <h2>Select Payment Method</h2>
+                <div class="payment-options">
+                    <button
+                        class="method-btn selected"
+                        onclick="setPaymentMethod('cash')"
+                    >
+                        💵 Cash
+                    </button>
+                    <button
+                        class="method-btn"
+                        onclick="setPaymentMethod('card')"
+                    >
+                        💳 Card
+                    </button>
+                    <button class="method-btn" onclick="setPaymentMethod('qr')">
+                        📱 QR Code
+                    </button>
+                </div>
+
+                <div class="payment-screen" id="payment-screen"></div>
+
+                <button class="close-modal" onclick="closeCheckout()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <script>
+            // --- YOUR PRODUCTS DATA STRUCTURE ---
+            const PRODUCTS = [
+                // Cones
+                {
+                    id: 101,
+                    name: "Pink Pony Cone",
+                    price: 40,
+                    category: "Ice Cream Cones",
+                    image: "images/cone_pony.png",
+                },
+                {
+                    id: 102,
+                    name: "Heart Swirl Cone",
+                    price: 45,
+                    category: "Ice Cream Cones",
+                    image: "images/cone_hearts.png",
+                },
+                {
+                    id: 103,
+                    name: "Classic Yellow Cone",
+                    price: 30,
+                    category: "Ice Cream Cones",
+                    image: "images/cone_yellow.png",
+                },
+                {
+                    id: 104,
+                    name: "Abby Cream Purple Cone",
+                    price: 45,
+                    category: "Ice Cream Cones",
+                    image: "images/cone_abby.png",
+                },
+                {
+                    id: 105,
+                    name: "Pink Dip Cone",
+                    price: 35,
+                    category: "Ice Cream Cones",
+                    image: "images/cone_pink.png",
+                },
+
+                // Scoops
+                {
+                    id: 201,
+                    name: "Pink Polka Dip",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_pink_polka.png",
+                },
+                {
+                    id: 202,
+                    name: "Lime Sprinkles",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_lime_sprinkles.png",
+                },
+                {
+                    id: 203,
+                    name: "Choco Fudge Sprinkles",
+                    price: 25,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_choco_sprinkles.png",
+                },
+                {
+                    id: 204,
+                    name: "Vanilla Zebra Drizzle",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_zebra.png",
+                },
+                {
+                    id: 205,
+                    name: "Milk Chocolate Scoop",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_chocolate.png",
+                },
+                {
+                    id: 206,
+                    name: "Matcha Green Scoop",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_matcha.png",
+                },
+                {
+                    id: 207,
+                    name: "Cherry Vanilla Swirl",
+                    price: 25,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_cherry_vanilla.png",
+                },
+                {
+                    id: 208,
+                    name: "Bright Strawberry Scoop",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_bright_pink.png",
+                },
+                {
+                    id: 209,
+                    name: "Choco Chip Scoop",
+                    price: 25,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_choco_chip.png",
+                },
+                {
+                    id: 210,
+                    name: "Strawberry Crunch",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_strawberry_crunch.png",
+                },
+                {
+                    id: 211,
+                    name: "Orange Sherbet",
+                    price: 20,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_orange.png",
+                },
+                {
+                    id: 212,
+                    name: "Rainbow Swirl Scoop",
+                    price: 25,
+                    category: "Scoops & Toppings",
+                    image: "images/scoop_rainbow.png",
+                },
+
+                // Groceries
+                {
+                    id: 301,
+                    name: "Tomato Ketchup",
+                    price: 35,
+                    category: "Pantry & Groceries",
+                    image: "images/ketchup_red.png",
+                },
+                {
+                    id: 302,
+                    name: "Pommes Fry Sauce",
+                    price: 40,
+                    category: "Pantry & Groceries",
+                    image: "images/sauce_pommes.png",
+                },
+                {
+                    id: 303,
+                    name: "Tomato Joe Ketchup",
+                    price: 35,
+                    category: "Pantry & Groceries",
+                    image: "images/ketchup_joe.png",
+                },
+                {
+                    id: 304,
+                    name: "McCain French Fries",
+                    price: 50,
+                    category: "Pantry & Groceries",
+                    image: "images/fries_mccain.png",
+                },
+                {
+                    id: 305,
+                    name: "Milk Bun",
+                    price: 30,
+                    category: "Pantry & Groceries",
+                    image: "images/milk_bun.png",
+                },
+                {
+                    id: 306,
+                    name: "Sweet Corn",
+                    price: 20,
+                    category: "Pantry & Groceries",
+                    image: "images/corn.png",
+                },
+                {
+                    id: 307,
+                    name: "Purple Eggplant",
+                    price: 20,
+                    category: "Pantry & Groceries",
+                    image: "images/eggplant.png",
+                },
+                {
+                    id: 308,
+                    name: "Farm Egg",
+                    price: 10,
+                    category: "Pantry & Groceries",
+                    image: "images/egg.png",
+                },
+                {
+                    id: 309,
+                    name: "Fresh Carrot",
+                    price: 15,
+                    category: "Pantry & Groceries",
+                    image: "images/carrot.png",
+                },
+                {
+                    id: 310,
+                    name: "Fresh Broccoli",
+                    price: 15,
+                    category: "Pantry & Groceries",
+                    image: "images/broccoli.png",
+                },
+                {
+                    id: 311,
+                    name: "Black Pepper",
+                    price: 25,
+                    category: "Pantry & Groceries",
+                    image: "images/pepper.png",
+                },
+                {
+                    id: 312,
+                    name: "Olive Oil Bottle",
+                    price: 45,
+                    category: "Pantry & Groceries",
+                    image: "images/olive_oil.png",
+                },
+                {
+                    id: 313,
+                    name: "Cleaner Spray",
+                    price: 40,
+                    category: "Pantry & Groceries",
+                    image: "images/cleaner.png",
+                },
+
+                // Treats
+                {
+                    id: 401,
+                    name: "Sprinkles Donut",
+                    price: 35,
+                    category: "Snacks & Treats",
+                    image: "images/donut_purple.png",
+                },
+                {
+                    id: 402,
+                    name: "Milk Carton",
+                    price: 25,
+                    category: "Snacks & Treats",
+                    image: "images/milk_carton.png",
+                },
+                {
+                    id: 403,
+                    name: "Baby Milk Bottle",
+                    price: 20,
+                    category: "Snacks & Treats",
+                    image: "images/baby_bottle.png",
+                },
+                {
+                    id: 404,
+                    name: "Drink Dispenser",
+                    price: 80,
+                    category: "Snacks & Treats",
+                    image: "images/mcdonalds_dispenser.png",
+                },
+                {
+                    id: 405,
+                    name: "Cupcake Box",
+                    price: 60,
+                    category: "Snacks & Treats",
+                    image: "images/cupcake_box.png",
+                },
+                {
+                    id: 406,
+                    name: "Fresh Sushi Set",
+                    price: 70,
+                    category: "Snacks & Treats",
+                    image: "images/sushi_box.png",
+                },
+                {
+                    id: 407,
+                    name: "Pizza Box",
+                    price: 65,
+                    category: "Snacks & Treats",
+                    image: "images/pizza_box.png",
+                },
+                {
+                    id: 408,
+                    name: "Ricola Candy Tin",
+                    price: 40,
+                    category: "Snacks & Treats",
+                    image: "images/ricola_tin.png",
+                },
+                {
+                    id: 409,
+                    name: "Ovomaltine Tin",
+                    price: 50,
+                    category: "Snacks & Treats",
+                    image: "images/ovomaltine_tin.png",
+                },
+                {
+                    id: 410,
+                    name: "Cookies Box",
+                    price: 45,
+                    category: "Snacks & Treats",
+                    image: "images/cookies_box.png",
+                },
+                {
+                    id: 411,
+                    name: "Donut Box",
+                    price: 45,
+                    category: "Snacks & Treats",
+                    image: "images/donut_box.png",
+                },
+                {
+                    id: 412,
+                    name: "Kakao Cocoa Tin",
+                    price: 50,
+                    category: "Snacks & Treats",
+                    image: "images/kakao_tin.png",
+                },
+                {
+                    id: 413,
+                    name: "Prinzen Biscuits",
+                    price: 40,
+                    category: "Snacks & Treats",
+                    image: "images/prinzen_biscuits.png",
+                },
+                {
+                    id: 414,
+                    name: "Mini Sausage Jar",
+                    price: 55,
+                    category: "Snacks & Treats",
+                    image: "images/sausage_jar.png",
+                },
+            ];
+
+            // --- APP STATE ---
+            let cart = {};
+            let activeCategory = "All";
+            let currentPaymentMethod = "cash";
+
+            // --- AUDIO SYNTHESIS (NO EXTERNAL FILES NEEDED) ---
+            const audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+            )();
+            function playSound(type) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === "beep") {
+                    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === "chaching") {
+                    osc.type = "triangle";
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(
+                        659.25,
+                        audioCtx.currentTime + 0.1,
+                    ); // E5
+                    osc.frequency.setValueAtTime(
+                        783.99,
+                        audioCtx.currentTime + 0.2,
+                    ); // G5
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }
+            }
+
+            // --- RENDER CATEGORIES ---
+            function renderCategories() {
+                const categories = [
+                    "All",
+                    ...new Set(PRODUCTS.map((p) => p.category)),
+                ];
+                const tabsContainer = document.getElementById("category-tabs");
+                tabsContainer.innerHTML = "";
+
+                categories.forEach((cat) => {
+                    const btn = document.createElement("button");
+                    btn.className = `tab-btn ${cat === activeCategory ? "active" : ""}`;
+                    btn.innerText = cat;
+                    btn.onclick = () => {
+                        activeCategory = cat;
+                        renderCategories();
+                        renderProducts();
+                    };
+                    tabsContainer.appendChild(btn);
+                });
+            }
+
+            // --- RENDER PRODUCTS ---
+            function renderProducts() {
+                const grid = document.getElementById("products-grid");
+                grid.innerHTML = "";
+
+                const categoriesToRender =
+                    activeCategory === "All"
+                        ? [...new Set(PRODUCTS.map((p) => p.category))]
+                        : [activeCategory];
+
+                categoriesToRender.forEach((category) => {
+                    const categorySection = document.createElement("div");
+                    categorySection.className = "category-section";
+
+                    const categoryHeading = document.createElement("h3");
+                    categoryHeading.className = "category-heading";
+                    categoryHeading.innerText = category;
+                    categorySection.appendChild(categoryHeading);
+
+                    const categoryProductGrid = document.createElement("div");
+                    categoryProductGrid.className = "category-product-grid";
+
+                    const productsInCategory = PRODUCTS.filter(
+                        (p) => p.category === category,
+                    );
+
+                    productsInCategory.forEach((p) => {
+                        const card = document.createElement("div");
+                        card.className = "product-card";
+                        card.innerHTML = `
+          <img src="${p.image}" class=\"product-img\" alt=\"${p.name}\" onerror=\"this.src=\'https://via.placeholder.com/100?text=📦\'\">
+          <div class=\"product-title\">${p.name}</div>
+          <div class=\"product-price\">฿${p.price}</div>
+        `;
+                        card.onclick = () => addToCart(p);
+                        categoryProductGrid.appendChild(card);
+                    });
+                    categorySection.appendChild(categoryProductGrid);
+                    grid.appendChild(categorySection);
+                });
+            }
+
+            // --- CART LOGIC ---
+            function addToCart(product) {
+                playSound("beep");
+                if (cart[product.id]) {
+                    cart[product.id].qty += 1;
+                } else {
+                    cart[product.id] = { ...product, qty: 1 };
+                }
+                updateCartUI();
+            }
+
+            function changeQty(id, delta) {
+                if (cart[id]) {
+                    cart[id].qty += delta;
+                    if (cart[id].qty <= 0) delete cart[id];
+                    updateCartUI();
+                }
+            }
+
+            function clearCart() {
+                cart = {};
+                updateCartUI();
+            }
+
+            function calculateTotal() {
+                return Object.values(cart).reduce(
+                    (sum, item) => sum + item.price * item.qty,
+                    0,
+                );
+            }
+
+            function updateCartUI() {
+                const list = document.getElementById("cart-list");
+                list.innerHTML = "";
+
+                Object.values(cart).forEach((item) => {
+                    const el = document.createElement("div");
+                    el.className = "cart-item";
+                    el.innerHTML = `
+          <div class="cart-item-details">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-subtotal">฿${item.price * item.qty}</div>
+          </div>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+          </div>
+        `;
+                    list.appendChild(el);
+                });
+
+                document.getElementById("cart-total").innerText =
+                    `฿${calculateTotal()}`;
+            }
+
+            // --- CHECKOUT MODAL ---
+            function openCheckout() {
+                if (Object.keys(cart).length === 0)
+                    return alert("Your cart is empty!");
+                document.getElementById("payment-modal").style.display = "flex";
+                setPaymentMethod("cash");
+            }
+
+            function closeCheckout() {
+                document.getElementById("payment-modal").style.display = "none";
+            }
+
+            function setPaymentMethod(method) {
+                currentPaymentMethod = method;
+                const btns = document.querySelectorAll(".method-btn");
+                btns.forEach((b) => b.classList.remove("selected"));
+
+                const screen = document.getElementById("payment-screen");
+                const total = calculateTotal();
+
+                if (method === "cash") {
+                    btns[0].classList.add("selected");
+                    screen.innerHTML = `
+          <p style="margin-bottom:10px;">Tap bills to accept payment:</p>
+          <div class="cash-bills">
+            <button class="bill-btn" onclick="completePayment()">฿20</button>
+            <button class="bill-btn" onclick="completePayment()">฿50</button>
+            <button class="bill-btn" onclick="completePayment()">฿100</button>
+            <button class="bill-btn" onclick="completePayment()">฿500</button>
+          </div>
+        `;
+                } else if (method === "card") {
+                    btns[1].classList.add("selected");
+                    screen.innerHTML = `
+          <div class="card-graphic" onclick="completePayment()">💳</div>
+          <p style="margin-top:10px; font-weight:bold;">Tap card on reader!</p>
+        `;
+                } else if (method === "qr") {
+                    btns[2].classList.add("selected");
+                    screen.innerHTML = `
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TOY_SHOP_PAYMENT" class="qr-img" onclick="completePayment()">
+          <p style="margin-top:10px; font-weight:bold;">Scan with register!</p>
+        `;
+                }
+            }
+
+            function completePayment() {
+                playSound("chaching");
+                alert(
+                    `🎉 Payment of ฿${calculateTotal()} Accepted! Thank you!`,
+                );
+                clearCart();
+                closeCheckout();
+            }
+
+            // Initialize App
+            renderCategories();
+            renderProducts();
+        </script>
+    </body>
+</html>
