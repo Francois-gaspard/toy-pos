@@ -7,12 +7,12 @@
             content="width=device-width, initial-scale=1.0, user-scalable=no"
         />
         <title>Kids Toy Store POS 🛍️</title>
-        <link rel="manifest" href="./manifest.json" />
+        <link rel="manifest" href="/toy-pos/manifest.json" />
         <script>
             if ("serviceWorker" in navigator) {
                 window.addEventListener("load", () => {
                     navigator.serviceWorker
-                        .register("./sw.js")
+                        .register("/toy-pos/sw.js")
                         .then((reg) =>
                             console.log("Service Worker registered!", reg),
                         )
@@ -276,6 +276,8 @@
                 max-width: 500px;
                 text-align: center;
                 box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+                max-height: 80vh; /* Limit height to 80% of viewport height */
+                overflow-y: auto; /* Enable vertical scrolling if content overflows */
             }
             .payment-options {
                 display: flex;
