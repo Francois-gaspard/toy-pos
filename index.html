@@ -7,12 +7,12 @@
             content="width=device-width, initial-scale=1.0, user-scalable=no"
         />
         <title>Kids Toy Store POS 🛍️</title>
-        <link rel="manifest" href="/pos/manifest.json" />
+        <link rel="manifest" href="./manifest.json" />
         <script>
             if ("serviceWorker" in navigator) {
                 window.addEventListener("load", () => {
                     navigator.serviceWorker
-                        .register("/pos/sw.js")
+                        .register("./sw.js")
                         .then((reg) =>
                             console.log("Service Worker registered!", reg),
                         )
