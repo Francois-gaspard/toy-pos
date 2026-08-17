@@ -7,6 +7,24 @@
             content="width=device-width, initial-scale=1.0, user-scalable=no"
         />
         <title>Kids Toy Store POS 🛍️</title>
+        <link rel="manifest" href="/pos/manifest.json" />
+        <script>
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker
+                        .register("/pos/sw.js")
+                        .then((reg) =>
+                            console.log("Service Worker registered!", reg),
+                        )
+                        .catch((err) =>
+                            console.error(
+                                "Service Worker registration failed:",
+                                err,
+                            ),
+                        );
+                });
+            }
+        </script>
         <style>
             * {
                 box-sizing: border-box;
