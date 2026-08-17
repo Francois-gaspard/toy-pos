@@ -3,6 +3,7 @@
   "short_name": "Toy POS",
   "description": "A Point of Sale application for a Kids Toy Store.",
   "start_url": "index.html",
+  "scope": "/toy-pos/",
   "display": "standalone",
   "background_color": "#f0f4f8",
   "theme_color": "#3b82f6",
